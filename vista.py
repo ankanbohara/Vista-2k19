@@ -31,21 +31,21 @@ print("X_test shape: " + str(X_test.shape))
 print("Y_test shape: " + str(Y_test.shape))
 from keras import optimizers
 from keras import applications
-model2 = applications.VGG16(weights = "imagenet", include_top=False, input_shape = (IMG_SIZE, IMG_SIZE, 3))
+model = applications.VGG16(weights = "imagenet", include_top=False, input_shape = (IMG_SIZE, IMG_SIZE, 3))
 #model2 = applications.xception.Xception(weights = "imagenet", include_top=False, input_shape = (IMG_SIZE, IMG_SIZE, 3))
 #model2 = applications.InceptionV3(weights = "imagenet", include_top=False, input_shape = (IMG_SIZE, IMG_SIZE, 3))
 
-for layer in model2.layers[:5]:
+for layer in model.layers[:5]:
     layer.trainable = False
 
 #Adding custom Layers 
-x = model2.output
+x = model.output
 x = Flatten()(x)
 x = Dense(1024, activation="relu")(x)
 x = Dropout(0.3)(x)
 x = Dense(1024, activation="relu")(x)
 predictions = Dense(14, activation="softmax")(x)
-model_final = Model(input = model2.input, output = predictions)
+model_final = Model(input = model.input, output = predictions)
 model_final.compile(loss = "categorical_crossentropy", optimizer = optimizers.SGD(lr=0.0001, momentum=0.9), metrics=["accuracy"])
 
 history = model_final.fit(X_train, Y_train, epochs=20,batch_size=32, validation_data=(X_test, Y_test), verbose=1)
